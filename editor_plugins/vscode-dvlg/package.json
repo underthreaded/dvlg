@@ -1,0 +1,39 @@
+{
+  "name": "dvlg",
+  "displayName": "dvlg",
+  "description": "DevLog (dvlg) support",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.92.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "dvlg",
+        "aliases": [
+          "dvlg"
+        ],
+        "extensions": [
+          ".dvlg"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "dvlg",
+        "scopeName": "source.dvlg",
+        "path": "./syntax.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "dvlg",
+        "path": "./snippets.json"
+      }
+    ]
+  }
+}

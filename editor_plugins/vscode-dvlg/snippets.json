@@ -1,0 +1,41 @@
+{
+    "Date": {
+        "prefix": [
+            "#date",
+            "#today",
+            "day"
+        ],
+        "body": [
+            "# $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE"
+        ],
+        "description": "Add current date header"
+    },
+    "Todo": {
+        "prefix": [
+            "- [",
+            "todo"
+        ],
+        "body": [
+            "- [ ] "
+        ],
+        "description": "Add todo checkbox"
+    },
+    "TIL": {
+        "prefix": [
+            "til"
+        ],
+        "body": [
+            "? "
+        ],
+        "description": "Add TIL prefix"
+    },
+    "Reminder": {
+        "prefix": [
+            "reminder"
+        ],
+        "body": [
+            "![$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE$1] $2"
+        ],
+        "description": "Add TIL prefix"
+    }
+}

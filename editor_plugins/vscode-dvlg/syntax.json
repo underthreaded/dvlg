@@ -1,0 +1,88 @@
+{
+  "scopeName": "source.dvlg",
+  "name": "DevLog",
+  "patterns": [
+    {
+      "name": "constant.language.date",
+      "match": "^(# \\d{4}-\\d{2}-\\d{2})$",
+      "captures": {
+        "1": {
+          "name": "markup.bold"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.todo.uncompleted",
+      "match": "^(- \\[\\])(.*)$",
+      "captures": {
+        "1": {
+          "name": "entity.name.type"
+        },
+        "2": {
+          "name": "source.diff punctuation.definition.from-file.diff"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.todo.completed",
+      "match": "^(- \\[x\\])(.*)$",
+      "captures": {
+        "1": {
+          "name": "comment"
+        },
+        "2": {
+          "name": "comment"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.todo.dropped",
+      "match": "^(- \\[-\\])(.*)$",
+      "captures": {
+        "1": {
+          "name": "comment"
+        },
+        "2": {
+          "name": "comment"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.reminder",
+      "match": "^(!\\[\\d{4}-\\d{2}-\\d{2}\\]) (.*)$",
+      "captures": {
+        "1": {
+          "name": "entity.name.function.decorator"
+        },
+        "2": {
+          "name": "markup.italic"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.til",
+      "match": "^(\\? )(.*)$",
+      "captures": {
+        "1": {
+          "name": "storage"
+        },
+        "2": {
+          "name": "string"
+        }
+      }
+    },
+    {
+      "name": "entity.name.tag.note",
+      "match": "^([a-z0-9/]*> ).*",
+      "captures": {
+        "1": {
+          "name": "variable"
+        },
+        "2": {
+          "name": "meta.embedded.inline.md"
+        }
+      }
+    }
+  ],
+  "repository": {}
+}
