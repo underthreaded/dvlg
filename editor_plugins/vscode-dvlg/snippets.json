@@ -1,9 +1,10 @@
 {
     "Date": {
         "prefix": [
-            "#date",
-            "#today",
-            "day"
+            "@date",
+            "@today",
+            "today",
+            "date"
         ],
         "body": [
             "# $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE"
@@ -25,16 +26,28 @@
             "til"
         ],
         "body": [
+            "! "
+        ],
+        "description": "Add TIL prefix"
+    },
+    "QTS": {
+        "prefix": [
+            "qts"
+        ],
+        "body": [
             "? "
         ],
         "description": "Add TIL prefix"
     },
     "Reminder": {
         "prefix": [
-            "reminder"
+            "reminder",
+            "cal",
+            "calendar",
+            "event"
         ],
         "body": [
-            "![$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE$1] $2"
+            "[$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE$1] $2"
         ],
         "description": "Add TIL prefix"
     }

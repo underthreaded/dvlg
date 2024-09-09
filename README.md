@@ -21,7 +21,7 @@ The main constructs of the language include:
 ```
 
 ### TODO's
-Everyone has todo's
+Everyone knows what todo's are.
 ```
 - [ ] An uncompleted TODO
 - [/] An in progress TODO
@@ -30,6 +30,7 @@ Everyone has todo's
 ```
 
 ### TIL's
+Short for Today I Learned. Keeping a log of these is great for tracking your progress or just interesting facts.
 ```
 ! Today I learned about dvlg
 ```
@@ -49,7 +50,7 @@ The TODO version of this would be
 - [ ] learn if this langguage is useful at all?
 ```
 
-Which is of course too much typing.
+Which is, of course, too much typing.
 
 ### Calendar Entries
 ```

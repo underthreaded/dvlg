@@ -1,10 +1,28 @@
 {
   "scopeName": "source.dvlg",
-  "name": "DevLog",
+  "name": "dvlg",
   "patterns": [
     {
-      "name": "constant.language.date",
-      "match": "^(# \\d{4}-\\d{2}-\\d{2})$",
+      "name": "constant.language.date-header",
+      "match": "^@\\d{4}-\\d{2}-\\d{2}$",
+      "captures": {
+        "0": {
+          "name": "markup.bold"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.todo.uncompleted",
+      "match": "^- \\[ ?\\] (.*)$",
+      "captures": {
+        "1": {
+          "name": "markup.italic"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.todo.inprogress",
+      "match": "^- \\[/\\] (.*)$",
       "captures": {
         "1": {
           "name": "markup.bold"
@@ -12,74 +30,68 @@
       }
     },
     {
-      "name": "keyword.control.todo.uncompleted",
-      "match": "^(- \\[\\])(.*)$",
-      "captures": {
-        "1": {
-          "name": "entity.name.type"
-        },
-        "2": {
-          "name": "source.diff punctuation.definition.from-file.diff"
-        }
-      }
-    },
-    {
       "name": "keyword.control.todo.completed",
-      "match": "^(- \\[x\\])(.*)$",
+      "match": "^(- \\[x\\] (.*))$",
       "captures": {
         "1": {
-          "name": "comment"
-        },
-        "2": {
           "name": "comment"
         }
       }
     },
     {
       "name": "keyword.control.todo.dropped",
-      "match": "^(- \\[-\\])(.*)$",
+      "match": "^(- \\[\\-\\] .*)$",
       "captures": {
         "1": {
           "name": "comment"
-        },
-        "2": {
-          "name": "comment"
-        }
-      }
-    },
-    {
-      "name": "keyword.control.reminder",
-      "match": "^(!\\[\\d{4}-\\d{2}-\\d{2}\\]) (.*)$",
-      "captures": {
-        "1": {
-          "name": "entity.name.function.decorator"
-        },
-        "2": {
-          "name": "markup.italic"
         }
       }
     },
     {
       "name": "keyword.control.til",
-      "match": "^(\\? )(.*)$",
+      "match": "^! (.*)$",
       "captures": {
         "1": {
-          "name": "storage"
-        },
-        "2": {
           "name": "string"
         }
       }
     },
     {
-      "name": "entity.name.tag.note",
-      "match": "^([a-z0-9/]*> ).*",
+      "name": "keyword.control.qts",
+      "match": "^\\? (.*)$",
       "captures": {
         "1": {
-          "name": "variable"
+          "name": "storage.type"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.calendar.entry",
+      "match": "^\\[(\\d{4}-\\d{2}-\\d{2})(?: (\\d{2}:\\d{2}))?(?:-(\\d{2}:\\d{2}))?\\] (.*)$",
+      "captures": {
+        "1": {
+          "name": "constant.numeric"
         },
         "2": {
-          "name": "meta.embedded.inline.md"
+          "name": "constant.numeric"
+        },
+        "3": {
+          "name": "constant.numeric"
+        },
+        "4": {
+          "name": "string.unquoted"
+        }
+      }
+    },
+    {
+      "name": "entity.name.tag.note",
+      "match": "^(\\w*(?:/\\w+)*>) (.*)$",
+      "captures": {
+        "1": {
+          "name": "entity.name.tag"
+        },
+        "2": {
+          "name": "string"
         }
       }
     }
