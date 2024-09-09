@@ -74,11 +74,24 @@ tag> this is a tagged note
 tag1/tag2> this is a multi tag note
 ```
 
+### Multiline notes
+When you want to take longer form notes, just keep writing on newlines.
+As long as you don't use the above syntax your notes should apply to the preceding constructs (todo/til/qts/note/calendar/etc...)
+
+```
+- [ ] create video for showing off dvlg
+
+The video should be short with no fluff.
+Probably keep short and emphasise how we want to keep users typing words and focusing on the content not the process.
+
+- [ ] Do this other thing
+```
+
 ## Why
 This is not a competitor to the almighty Org Mode nor a replacement for any tool in particular.
 We wrote this because we weren't keeping enough notes in our day to day.
 And wanted a non-obtrusive language which encoded the semantic meaning we wanted into it.
-In theory allowing post-processing tooling to build on top of the language, and multiply it's power.
+In theory allowing post-processing tooling to build on top of the language, and multiply its power.
 
 This is a markup format specifically designed for append dominant writing.
 Append dominant writing we feel is what we need to most efficiently get thoughts out of our brain and saved for future value.
