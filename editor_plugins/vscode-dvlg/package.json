@@ -1,7 +1,13 @@
 {
   "name": "dvlg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/underthreaded/dvlg.git"
+  },
+  "publisher": "underthreaded",
   "displayName": "dvlg",
-  "description": "DevLog (dvlg) support",
+  "license": "MIT",
+  "description": "Support for the dvlg note taking file format",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.92.0"
