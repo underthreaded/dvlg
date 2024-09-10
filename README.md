@@ -1,8 +1,12 @@
 # dvlg
 
+![](dvlg.png)
+
 `dvlg` is a plaintext markup language for keeping a continuous developer log.
 The syntax is intentionally simple to allow free-flow of information from your brain onto the page.
 We created dvlg instead of using an existing markup format to allow us to bake in certain semantic constructs for which tooling can be built around.
+
+**Note `dvlg` is in alpha, the format is still subject to change while we collect feedback.**
 
 ## The language
 

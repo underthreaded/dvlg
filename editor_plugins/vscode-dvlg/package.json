@@ -8,7 +8,12 @@
   "displayName": "dvlg",
   "license": "MIT",
   "description": "Support for the dvlg note taking file format",
-  "version": "0.0.1",
+  "icon": "dvlg.png",
+  "galleryBanner": {
+    "color": "#0B1F39",
+    "theme": "dark"
+  },
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.92.0"
   },
