@@ -85,7 +85,7 @@
     },
     {
       "name": "entity.name.tag.note",
-      "match": "^(\\w*(?:/\\w+)*>) (.*)$",
+      "match": "^(\\w*(?:/\\w+)*>) ?(.*)$",
       "captures": {
         "1": {
           "name": "entity.name.tag"

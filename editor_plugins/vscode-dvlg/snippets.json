@@ -7,7 +7,7 @@
             "date"
         ],
         "body": [
-            "# $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE"
+            "@$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE"
         ],
         "description": "Add current date header"
     },
