@@ -75,7 +75,7 @@ For when you want to make a note for a project you're working on, thinking via t
 ```
 > This is a plain untagged note
 tag> this is a tagged note
-tag1/tag2> this is a multi tag note
+tag1/tag2> tags can have a path to allow you to categorise notes in a hierarchy
 ```
 
 ### Multiline notes
