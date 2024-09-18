@@ -6,6 +6,11 @@ use std::io::{self, BufRead};
 use std::path::Path;
 use std::process;
 
+const OPTS: &[&str] = &[
+    "todo", "done", "dropped", "doing", "til", "qts", "cal", "note",
+];
+const TODO_OPTS: &[&str] = &["todo", "done", "dropped", "doing"];
+
 #[derive(Debug)]
 enum EntryType {
     Todo {
@@ -130,8 +135,6 @@ fn parse_line(
                 extra.push_str(line);
             }
         }
-    } else {
-        eprintln!("Unexpected line format: {}", line);
     }
 }
 
@@ -163,12 +166,24 @@ fn parse_file<P: AsRef<Path>>(filename: P) -> io::Result<DvlgFile> {
     Ok(dvlg)
 }
 
+fn print_entry(prefix: &str, extra: &str) {
+    println!("{}", prefix);
+    if !extra.is_empty() {
+        println!("{}\n", extra);
+    }
+}
+
 fn display_entries(dvlg: &DvlgFile, entry_type: &str, tag: Option<&str>) {
     for (date, entries) in &dvlg.entries {
         let mut filtered: Vec<_> = entries
             .iter()
             .filter(|entry| match entry {
-                EntryType::Todo { .. } if entry_type == "todo" => true,
+                EntryType::Todo { state, .. } if TODO_OPTS.contains(&entry_type) => {
+                    match (entry_type, state.as_str()) {
+                        ("todo", " ") | ("done", "x") | ("doing", "/") | ("dropped", "-") => true,
+                        _ => false,
+                    }
+                }
                 EntryType::Til { .. } if entry_type == "til" => true,
                 EntryType::Qts { .. } if entry_type == "qts" => true,
                 EntryType::Calendar { .. } if entry_type == "cal" => true,
@@ -184,7 +199,7 @@ fn display_entries(dvlg: &DvlgFile, entry_type: &str, tag: Option<&str>) {
         }
 
         if entry_type != "cal" {
-            println!("\n@{}", date);
+            println!("@{}", date);
         } else {
             filtered.sort_by(|a, b| {
                 if let EntryType::Calendar { date: date_a, .. } = a {
@@ -203,46 +218,27 @@ fn display_entries(dvlg: &DvlgFile, entry_type: &str, tag: Option<&str>) {
                     title,
                     extra,
                 } => {
-                    println!("- [{}] {}", state, title);
-                    if !extra.is_empty() {
-                        println!("{}\n", extra);
-                    }
+                    print_entry(&format!("- [{}] {}", state, title), extra);
                 }
                 EntryType::Til { title, extra } => {
-                    println!("! {}", title);
-                    if !extra.is_empty() {
-                        println!("{}\n", extra);
-                    }
+                    print_entry(&format!("! {}", title), extra);
                 }
                 EntryType::Qts { question, extra } => {
-                    println!("? {}", question);
-                    if !extra.is_empty() {
-                        println!("{}\n", extra);
-                    }
+                    print_entry(&format!("? {}", question), extra);
                 }
                 EntryType::Calendar { date, title, extra } => {
-                    println!("[{}] {}", date, title);
-                    if !extra.is_empty() {
-                        println!("{}\n", extra);
-                    }
+                    print_entry(&format!("[{}] {}", date, title), extra);
                 }
                 EntryType::Note { tags, title, extra } => {
-                    println!("{}> {}", tags, title);
-                    if !extra.is_empty() {
-                        println!("{}\n", extra);
-                    }
+                    print_entry(&format!("{}> {}", tags, title), extra);
                 }
             }
         }
     }
-    println!("");
 }
 
 fn print_usage(args: &Vec<String>) {
-    eprintln!(
-        "Usage: {} <filename> <todo|til|qts|cal|note> [tag]",
-        args[0]
-    );
+    eprintln!("Usage: {} <filename> <{}> [tag]", args[0], OPTS.join("|"));
 }
 
 fn main() {
@@ -256,7 +252,7 @@ fn main() {
     let entry_type: &str = &args[2];
     let tag: Option<&str> = if args.len() > 3 { Some(&args[3]) } else { None };
 
-    if !vec!["todo", "til", "qts", "cal", "note"].contains(&entry_type) {
+    if !OPTS.contains(&entry_type) {
         print_usage(&args);
         process::exit(1);
     }
