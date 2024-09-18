@@ -99,3 +99,21 @@ In theory allowing post-processing tooling to build on top of the language, and 
 
 This is a markup format specifically designed for append dominant writing.
 Append dominant writing we feel is what we need to most efficiently get thoughts out of our brain and saved for future value.
+
+
+## The Tooling
+
+Currently, we have a very simple cli tool which allows simply filtering the different types of notes in your document.
+
+This makes it easy to check your todo's for example:
+
+```
+dvlg your.dlvg todo
+```
+
+### Building the tooling
+You just need `rustc`, this is stdlib only.
+
+```
+rustc dvlg.rs
+```
