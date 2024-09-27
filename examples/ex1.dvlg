@@ -11,10 +11,12 @@ We can do this by writing a nice readme to explain the idea for now
 - [/] learn how to make a simple devlog LSP with snippet suggestions and suchlike
 [2024-09-10] Remind me to do something
 
-> It's nice when you can watch an expert doing what you're trying to do
+/ It's nice when you can watch an expert doing what you're trying to do
 
 
-rust> Something to do with rust
+/rust/ Something to do with rust
+
+/rust/function/ something to do with rust functions
 
 [2024-09-03] Super important meeting
 

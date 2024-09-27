@@ -85,12 +85,15 @@
     },
     {
       "name": "entity.name.tag.note",
-      "match": "^(\\w*(?:/\\w+)*>) ?(.*)$",
+      "match": "^(/)([a-z_/]+/)* ?(.*)",
       "captures": {
         "1": {
           "name": "entity.name.tag"
         },
         "2": {
+          "name": "entity.name.tag"
+        },
+        "3": {
           "name": "string"
         }
       }

@@ -112,10 +112,10 @@ fn parse_line(
             title,
             extra: String::new(),
         });
-    } else if line.starts_with('>') || line.contains('>') {
+    } else if line.starts_with('/') {
         handle_existing_entry(current_entry, current_date, dvlg);
-        let parts: Vec<&str> = line.splitn(2, '>').collect();
-        let tags: String = parts[0].to_string();
+        let parts: Vec<&str> = line.splitn(2, ' ').collect();
+        let tags: String = parts[0].trim_matches('/').to_string();
         let title = parts[1].trim().to_string();
         *current_entry = Some(EntryType::Note {
             tags,
@@ -230,7 +230,11 @@ fn display_entries(dvlg: &DvlgFile, entry_type: &str, tag: Option<&str>) {
                     print_entry(&format!("[{}] {}", date, title), extra);
                 }
                 EntryType::Note { tags, title, extra } => {
-                    print_entry(&format!("{}> {}", tags, title), extra);
+                    if !tags.is_empty() {
+                        print_entry(&format!("/{}/ {}", tags, title), extra);
+                    } else {
+                        print_entry(&format!("/ {}", title), extra);
+                    }
                 }
             }
         }

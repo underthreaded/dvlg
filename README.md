@@ -73,9 +73,9 @@ or with a time and duration
 For when you want to make a note for a project you're working on, thinking via typing etc...
 
 ```
-> This is a plain untagged note
-tag> this is a tagged note
-tag1/tag2> tags can have a path to allow you to categorise notes in a hierarchy
+/ This is a plain untagged note
+/tag/ this is a tagged note
+/tag1/tag2/ tags can have a path to allow you to categorise notes in a hierarchy
 ```
 
 ### Multiline notes
