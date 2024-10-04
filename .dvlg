@@ -1,0 +1,156 @@
+@2024-10-04
+
+It's about time we had the devlog for dvlg written in dvlg.
+
+The language is usable but there are still a couple things I think need more attention.
+
+- [x] I think we need a structure for noting ideas.
+- [x] TODOs are currently just global, but we may actually want to be able to tag them too.
+- [x] Completing todos is two actions, when it could be one
+- [x] When we write a question to self, we need a nice way to answer it
+- [x] What does writing text under a date tag do? Losing context when writing an idea or qts
+- [ ] TODO's need a "reconsider later" semantic
+- [x] priorities in todos
+- [ ] can we boil everything down to just an application of using specifically tagged notes? Everything else then is a special case of a tag?
+- [x] code blocks should be completely ignored? do we use markdown? Is it only important when using dvlg code blocks? Maybe we call them verbatim blocks (like comments, but still included in notes, just an escape hatch)
+- [ ] it's very common to just keep lists... do we want to allow this natively?
+
+One other thing I was thinking - to keep the format consistent.
+perhaps we reuse our tagging structure for generic notes, and just vary the end of the tag to denote what type of item it is?
+
+```
+/ global note
+/[] global todo
+/[x] global completed todo
+/! global til
+/? global qts
+
+
+/some/note/ Some note
+/a/todo[] A todo
+/an/idea$
+/til!
+/qts?
+```
+
+
+/todos/status/
+I don't like how to complete a todo you need to delete the empty space and then type the character
+
+One way to solve this is by removing the space in the uncompleted todo:
+```
+- [] todo
+- [x] completed todo
+```
+
+Issue with this is you lose alignment of the text which you want really for document cleanliness.
+Other ways to try and note a completed task include making the last non whitespace character of a todo a special character (limiting because we can no longer use many easily accessible symbols)
+Or changing the preceding character of a todo.
+```
+- [] todo ~
+- [] todo~
+x [] todo
+x] todo
+```
+
+None of the above really work for me...
+Perhaps this is something to solve with tooling instead?
+
+Though now I think of it, if we are going to tag todos, then we will lose alignment anyway so maybe this isn't a big deal?
+
+
+/todos/tagging/
+
+If we were to boil down todos as tags they may look something like:
+
+```
+/todo/<tag>/<priority>/<status> text
+```
+
+But this could get annoying with a lot of todos bunched together.
+Applying tags to todos is a bit tricky, in theory you don't want to have to copy the tag for every new one, especially if you bash our a bunch in one go.
+The way around that is to have a tag followed by todos:
+
+```
+/option1/
+- [ ] todo 1
+- [ ] todo 2
+- [ ] todo 3
+
+As opposed to (fake syntax for example)
+/option2[ ] todo 1
+/option2[ ] todo 2
+/option2[ ] todo 3
+
+Above looks okay but this may not be...
+/option3/subtask/thing1[ ] todo 1
+/option3/subtask/something[ ] todo 2
+/option3/subtask/subsubtask/etc[ ] todo 3
+
+Arguably better than:
+/option4/subtask/thing1/
+- [ ] todo 1
+/option4/subtask/something/
+- [ ] todo 2
+/option4/subtask/subsubtask/etc/
+- [ ] todo 3
+```
+
+This visually looks okay, but does mean two lines per singular todo.
+I guess also having super fine grained tags is going to distract people from the notes.
+Maybe time to reconsider arbitrary paths in tags... Maybe limit to 2 or 3?
+Can foresee complaints!
+
+The benefit of option 4 is it encourages focusing on one thing at a time?
+
+Let's go with option 4 for now.
+
+/
+- [ ] should probably keep parser in python if things are going to change so much for a little while...
+- [ ] would an autoformatter be beneficial? I'm imaginging a mechanism for being able to write an "aside note" and have it whisked out of the way so I can continue my original thought...
+
+/qts/answers/
+
+If I write a "qts", I will eventually want to answer it.
+
+The original thought I had was you would replace the ? with a ! and add your answer in the notes.
+
+But actually I think the right thing to do would be to make it so to answer a qts you need to follow the qts with a `?!` line which includes the answer.
+
+Wonder how this works with added context notes, for example if you're writing a note under some category. Then think of a qts and add it there, then to continue writing you are now under the context of the qts.
+
+Maybe the way to solve this is autoformatting? Make a rule where TODO/QTS/TIL/etc... all must live just under the date tag, and the rest is for notes underneath? Then you can have an autoformatter shove everything upwards and out of the way while someone is writing notes, though you lose the potential for tagging if you don't include the tag in the markup. This will likely be a preference thing...
+
+
+/ideas/
+
+How often am I writing notes when an idea pops up?
+I need to get that idea on paper ASAP and move on to not lose train of thought
+
+Options for syntax are:
+```
+# idea!
+$ idea!
+^ idea!
+| idea
+< idea
+\ idea
+) idea
+```
+
+# is my favorite because of ease of typing, but has overlap with markdown, but maybe we ban h1's anyway?
+$ is funny because ideas are money, could make it work for any currency symbol
+
+
+/todo/priorities/
+
+Could add the number instead of the gap in the todo?
+
+- [1] Very important
+- [5] default, shorthand => `- [ ]`
+- [9] lowest priority
+
+
+/code/blocks/
+
+code blocks should be completely ignored? do we use markdown? Is it only important when using dvlg code blocks? Maybe we call them verbatim blocks (like comments, but still included in notes, just an escape hatch)
