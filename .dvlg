@@ -9,11 +9,11 @@ The language is usable but there are still a couple things I think need more att
 - [x] Completing todos is two actions, when it could be one
 - [x] When we write a question to self, we need a nice way to answer it
 - [x] What does writing text under a date tag do? Losing context when writing an idea or qts
-- [ ] TODO's need a "reconsider later" semantic
+- [x] TODO's need a "reconsider later" semantic
 - [x] priorities in todos
-- [ ] can we boil everything down to just an application of using specifically tagged notes? Everything else then is a special case of a tag?
+- [x] can we boil everything down to just an application of using specifically tagged notes? Everything else then is a special case of a tag?
 - [x] code blocks should be completely ignored? do we use markdown? Is it only important when using dvlg code blocks? Maybe we call them verbatim blocks (like comments, but still included in notes, just an escape hatch)
-- [ ] it's very common to just keep lists... do we want to allow this natively?
+- [x] it's very common to just keep lists... do we want to allow this natively?
 
 One other thing I was thinking - to keep the format consistent.
 perhaps we reuse our tagging structure for generic notes, and just vary the end of the tag to denote what type of item it is?
@@ -154,3 +154,43 @@ Could add the number instead of the gap in the todo?
 /code/blocks/
 
 code blocks should be completely ignored? do we use markdown? Is it only important when using dvlg code blocks? Maybe we call them verbatim blocks (like comments, but still included in notes, just an escape hatch)
+
+@2024-10-07
+
+/todo/reconsider/
+
+Sometimes when you have a todo you want to make it go into the backlog and be reminded about it in some amount of time... You may argue if you don't want to do it now, just drop it and you'll think about it again if it's important. Maybe that's true, or maybe it's handy to be reminded in a given timeframe of something and then decide to drop it.
+
+I think the easiest way to do this would be to allow adding a length of time specifier in the check box
+
+Units should be larger here, smallest is 1d (but I wouldn't recommend that unless notes are super long form)
+
+I think 1d, 1w, 1m, 1q, 1y works here, and we can use the date at the position in the text to set a time before the todo gets highlighted in a specific way.
+
+```
+- [1q] add some fancy feature
+```
+
+
+/ can we boil everything down to just an application of using specifically tagged notes? Everything else then is a special case of a tag?
+
+Not sure if this would make life at all simpler if it were? All each block is is a title, text blog and some extra metadata, what value does this concept provide?
+
+I think let's leave that then.
+
+/lists/
+
+Making lists is a very common thing to do. We handle the special case of a todo list, but there are other lists.
+
+The best list markup is taken by markdown so I don't really see a way to avoid reusing that without breaking some level of compatibility.
+
+The only way I see needing native lists is to make it possible to join lists written across different days and that you get with tags as it is.
+
+Maybe tooling can detect if there are multiple lists in a note tag and do something special with them? But not native to the langauge I think.
+
+/nextsteps/
+
+- [ ] reformulate language based on above notes
+- [ ] rewrite parser/syntax higlighting
+- [ ] fix tooling
+- [ ] build LSP
