@@ -194,3 +194,9 @@ Maybe tooling can detect if there are multiple lists in a note tag and do someth
 - [ ] rewrite parser/syntax higlighting
 - [ ] fix tooling
 - [ ] build LSP
+
+? Is a heading on a generic note useful?
+
+trying to think of times where a heading on a random note is useful - if we have tags we already have some form of categorisation, but how do the titles help?
+
+Maybe it's just handy to have because other things will generally have a title - ideas and tils and such - and we can use them to make eventual pretty display in a web app nice.
