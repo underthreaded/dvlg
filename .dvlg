@@ -87,7 +87,7 @@ Above looks okay but this may not be...
 /option3/subtask/something[ ] todo 2
 /option3/subtask/subsubtask/etc[ ] todo 3
 
-Arguably better than:
+Arguably better than(?):
 /option4/subtask/thing1/
 - [ ] todo 1
 /option4/subtask/something/
@@ -102,7 +102,7 @@ Maybe time to reconsider arbitrary paths in tags... Maybe limit to 2 or 3?
 Can foresee complaints!
 
 The benefit of option 4 is it encourages focusing on one thing at a time?
-
+I've changed my mind, option 4 looks best even if it takes up more lines.
 Let's go with option 4 for now.
 
 /
@@ -200,3 +200,10 @@ Maybe tooling can detect if there are multiple lists in a note tag and do someth
 trying to think of times where a heading on a random note is useful - if we have tags we already have some form of categorisation, but how do the titles help?
 
 Maybe it's just handy to have because other things will generally have a title - ideas and tils and such - and we can use them to make eventual pretty display in a web app nice.
+
+/tags/
+
+Tags are useful to some extend, but may get unwieldy if overused and make the format messy.
+Is there anything we can do to try and keep it the devlog as clean as possible?
+
+I don't think making some notes like TIL/IDEA/QTS all go into the global scope makes sense, so what we'll do is make those inline tagged only.

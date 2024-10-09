@@ -30,6 +30,15 @@
         ],
         "description": "Add TIL prefix"
     },
+    "Ideas": {
+        "prefix": [
+            "idea"
+        ],
+        "body": [
+            "$ "
+        ],
+        "description": "Add idea prefix"
+    },
     "QTS": {
         "prefix": [
             "qts"
@@ -37,7 +46,17 @@
         "body": [
             "? "
         ],
-        "description": "Add TIL prefix"
+        "description": "Add QTS prefix"
+    },
+    "QTS Answer": {
+        "prefix": [
+            "qtsa",
+            "answer"
+        ],
+        "body": [
+            "?! "
+        ],
+        "description": "Add QTS Answer prefix"
     },
     "Reminder": {
         "prefix": [

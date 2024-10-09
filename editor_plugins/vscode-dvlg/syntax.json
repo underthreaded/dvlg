@@ -7,16 +7,34 @@
       "match": "^@\\d{4}-\\d{2}-\\d{2}$",
       "captures": {
         "0": {
-          "name": "markup.bold"
+          "name": "markup.heading"
         }
       }
     },
     {
-      "name": "keyword.control.todo.uncompleted",
-      "match": "^- \\[ ?\\] (.*)$",
+      "name": "keyword.control.todo.uncompleted.low",
+      "match": "^- \\[[ 0-5]\\] (.*)$",
+      "captures": {
+        "1": {
+          "name": "meta.embedded"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.todo.uncompleted.high",
+      "match": "^- \\[[6-9]\\] (.*)$",
       "captures": {
         "1": {
           "name": "markup.italic"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.todo.remind",
+      "match": "^(- \\[[0-9]+[dwmqy]{1}\\] .*)$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.tag"
         }
       }
     },
@@ -48,19 +66,37 @@
       }
     },
     {
-      "name": "keyword.control.til",
-      "match": "^! (.*)$",
+      "name": "keyword.control.idea",
+      "match": "^(/[a-z_/]+[a-z_^/])*\\$ (.*)$",
       "captures": {
-        "1": {
+        "2": {
+          "name": "markup.italic"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.til",
+      "match": "^(/[a-z_/]+[a-z_^/])*! (.*)$",
+      "captures": {
+        "2": {
           "name": "string"
         }
       }
     },
     {
-      "name": "keyword.control.qts",
-      "match": "^\\? (.*)$",
+      "name": "keyword.control.qts.answer",
+      "match": "^(/[a-z_/]+[a-z_^/])*\\?! (.*)$",
       "captures": {
-        "1": {
+        "2": {
+          "name": "storage.type"
+        }
+      }
+    },
+    {
+      "name": "keyword.control.qts",
+      "match": "^(/[a-z_/]+[a-z_^/])*\\? (.*)$",
+      "captures": {
+        "2": {
           "name": "storage.type"
         }
       }
@@ -85,7 +121,7 @@
     },
     {
       "name": "entity.name.tag.note",
-      "match": "^(/)([a-z_/]+/)* ?(.*)",
+      "match": "^(/)([a-z_/]+/)*($| .*$)",
       "captures": {
         "1": {
           "name": "entity.name.tag"

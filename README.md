@@ -37,7 +37,7 @@ The simplest type of note you can take is the general note.
 
 ```
 / This is a plain untagged note
-/tag/ this is a tagged note
+/tag/ this is a tagged note, tags always begin and end with a / but no spaces are allowed
 /tag/subtag/ tags can have a path to allow you to categorise notes in a hierarchy
 ```
 
@@ -74,35 +74,7 @@ Everyone knows what todo's are.
 - [1m] A remind me later TODO for 1 month available suffixes: d, w, m, q, y. For when you want to drop something but be reminded about it after a given amount of time.
 ```
 
-### TIL's
-Short for Today I Learned. Keeping a log of these is great for tracking your progress or just interesting facts.
-```
-! Today I learned about dvlg
-```
-
-### QTS's
-Sometimes a question occurs to you, and you don't have time to address it right now.
-Note it down, come back to it later and turn it into a TIL.
-
-This is pretty much a special case of a todo, except you don't need to add extra fluff in your description of the todo, and tracking the knowledge you know you don't know can sometimes come in handy!
-
-```
-? Is this language useful at all
-```
-
-The TODO version of this would be
-```
-- [ ] learn if this langguage is useful at all?
-```
-
-Which is, of course, too much typing.
-
-Once you have answered or otherwise resolved this question, you can answer it by adding an answer note below, like so
-
-```
-? Is this language useful at all
-?! Takes a bit of getting used to, but I like it!
-```
+TODO's inherit their current tag scope
 
 ### Calendar Entries
 Calendar notes are for noting down important future dates.
@@ -118,6 +90,61 @@ or with a time and duration
 [YYYY-MM-DD HH:MM-HH:MM] Big important meeting to avoid
 ```
 
+Calendar entries inherit their current tag scope.
+
+### Ideas's
+If you're anything like us, ideas pop into your head at random, at any times, and they haunt you if you don't write them down.
+```
+$ ideas are money
+```
+
+You can tag ideas like so
+
+```
+/project1$ We should consider rewriting this in C
+```
+
+Untagged ideas go straight to the default scope if not tagged, they do not inherit tag scope.
+
+### TIL's
+Short for Today I Learned. Keeping a log of these is great for tracking your progress or just interesting facts.
+```
+! dvlg a new language for taking notes
+```
+
+You can tag ideas like so
+
+```
+/scrum! Don't do it, unless you mean rugby
+```
+
+Untagged til's go straight to the default scope if not tagged, they do not inherit tag scope.
+
+### Question to self (QTS)
+Sometimes a question occurs to you, and you don't have time to address it right now.
+Note it down, come back to it later and turn it into a TIL.
+
+This is pretty much a special case of a todo, except you don't need to add extra fluff in your description of the todo, and tracking the knowledge you know you don't know can sometimes come in handy!
+
+```
+? Is this language useful
+```
+
+The TODO version of this would be
+```
+- [ ] learn if this langguage is useful at all?
+```
+
+Which is, of course, too much typing.
+
+Once you have answered or otherwise resolved this question, you can answer it by adding an answer note below, like so
+
+```
+? Is this language useful
+?! Takes a bit of getting used to, but I like it!
+```
+
+You can also tag these as with til's and ideas, but make sure the tags match on the question and the answer, so they get grouped correctly.
 
 ## Why
 This is not a competitor to the almighty Org Mode nor a replacement for any tool in particular.
