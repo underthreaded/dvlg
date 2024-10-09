@@ -19,11 +19,23 @@ enum EntryType {
         extra: String,
     },
     Til {
+        tag: String,
+        title: String,
+        extra: String,
+    },
+    Idea {
+        tag: String,
         title: String,
         extra: String,
     },
     Qts {
+        tag: String,
         question: String,
+        extra: String,
+    },
+    QtsAnswer {
+        tag: String,
+        answer: String,
         extra: String,
     },
     Calendar {
@@ -32,15 +44,22 @@ enum EntryType {
         extra: String,
     },
     Note {
-        tags: String,
+        tag: String,
         title: String,
         extra: String,
     },
 }
 
 #[derive(Debug)]
+enum LineType<'a> {
+    Date(&'a str),
+    NoteStart(EntryType),
+    NoteLine(&'a str),
+}
+
+#[derive(Debug)]
 struct DvlgFile {
-    entries: BTreeMap<String, Vec<EntryType>>, // Date -> List of Entries
+    entries: BTreeMap<String, Vec<EntryType>>,
 }
 
 impl DvlgFile {
@@ -50,91 +69,105 @@ impl DvlgFile {
         }
     }
 
-    fn add_entry(&mut self, date: &str, entry: EntryType) {
+    fn add_entry(&mut self, date: &Option<String>, entry: EntryType) {
+        let date_str = match date {
+            None => "1900-01-01".to_string(),
+            Some(date_str) => date_str.to_string(),
+        };
         self.entries
-            .entry(date.to_string())
+            .entry(date_str)
             .or_insert(Vec::new())
             .push(entry);
     }
 }
 
-fn parse_line(
-    line: &str,
-    current_date: &mut Option<String>,
-    current_entry: &mut Option<EntryType>,
-    dvlg: &mut DvlgFile,
-) {
-    fn handle_existing_entry(
-        current_entry: &mut Option<EntryType>,
-        current_date: &Option<String>,
-        dvlg: &mut DvlgFile,
-    ) {
-        if let Some(entry) = current_entry.take() {
-            if let Some(date) = current_date.as_ref() {
-                dvlg.add_entry(date, entry);
-            }
-        }
-    }
+fn parse_line(line: &str) -> LineType {
+    let date_header = line.starts_with('@');
+    let todo = line.starts_with("- [");
 
-    if line.starts_with('@') {
-        handle_existing_entry(current_entry, current_date, dvlg);
-        *current_date = Some(line[1..].trim().to_string());
-    } else if line.starts_with("- [") {
-        handle_existing_entry(current_entry, current_date, dvlg);
+    let note = line.starts_with('/');
+    let parts: Vec<&str> = line.splitn(2, ' ').collect();
+    let has_part = !parts.is_empty();
+
+    let tag = match has_part {
+        false => "".to_string(),
+        true => parts[0].trim_matches(['!', '/', '?', '$']).to_string(),
+    };
+
+    let is_construct = |starts_with: &str, ends_with: &str| -> bool {
+        has_part
+            && (parts[0].starts_with(starts_with) || parts[0].starts_with(ends_with))
+            && parts[0].ends_with(ends_with)
+            && !parts[0]
+                .strip_prefix(starts_with)
+                .unwrap_or(parts[0])
+                .strip_suffix(ends_with)
+                .unwrap_or(parts[0].strip_prefix(starts_with).unwrap_or(parts[0]))
+                .contains(['!', '?', '$'])
+    };
+
+    let til = is_construct("/", "!");
+    let qts = is_construct("/", "?");
+    let qtsa = is_construct("/", "?!");
+    let idea = is_construct("/", "$");
+
+    let title = if parts.len() == 2 {
+        parts[1].trim().to_string()
+    } else {
+        "".to_string()
+    };
+
+    if date_header {
+        return LineType::Date(line[1..].trim());
+    } else if todo {
         let state = &line[3..4];
         let title = line[5..].trim().to_string();
-        *current_entry = Some(EntryType::Todo {
+        return LineType::NoteStart(EntryType::Todo {
             state: state.to_string(),
             title,
             extra: String::new(),
         });
-    } else if line.starts_with('!') {
-        handle_existing_entry(current_entry, current_date, dvlg);
-        let title = line[1..].trim().to_string();
-        *current_entry = Some(EntryType::Til {
-            title,
-            extra: String::new(),
-        });
-    } else if line.starts_with('?') {
-        handle_existing_entry(current_entry, current_date, dvlg);
-        let question = line[1..].trim().to_string();
-        *current_entry = Some(EntryType::Qts {
-            question,
-            extra: String::new(),
-        });
     } else if line.starts_with('[') && line.contains(']') {
-        handle_existing_entry(current_entry, current_date, dvlg);
         let end = line.find(']').unwrap();
         let date = &line[1..end];
         let title = line[end + 1..].trim().to_string();
-        *current_entry = Some(EntryType::Calendar {
+        return LineType::NoteStart(EntryType::Calendar {
             date: date.to_string(),
             title,
             extra: String::new(),
         });
-    } else if line.starts_with('/') {
-        handle_existing_entry(current_entry, current_date, dvlg);
-        let parts: Vec<&str> = line.splitn(2, ' ').collect();
-        let tags: String = parts[0].trim_matches('/').to_string();
-        let title = parts[1].trim().to_string();
-        *current_entry = Some(EntryType::Note {
-            tags,
+    } else if til {
+        return LineType::NoteStart(EntryType::Til {
+            tag,
             title,
             extra: String::new(),
         });
-    } else if let Some(entry) = current_entry.as_mut() {
-        match entry {
-            EntryType::Todo { extra, .. }
-            | EntryType::Til { extra, .. }
-            | EntryType::Qts { extra, .. }
-            | EntryType::Calendar { extra, .. }
-            | EntryType::Note { extra, .. } => {
-                if !extra.is_empty() {
-                    extra.push('\n');
-                }
-                extra.push_str(line);
-            }
-        }
+    } else if idea {
+        return LineType::NoteStart(EntryType::Idea {
+            tag,
+            title,
+            extra: String::new(),
+        });
+    } else if qts {
+        return LineType::NoteStart(EntryType::Qts {
+            tag,
+            question: title,
+            extra: String::new(),
+        });
+    } else if qtsa {
+        return LineType::NoteStart(EntryType::QtsAnswer {
+            tag,
+            answer: title,
+            extra: String::new(),
+        });
+    } else if note {
+        return LineType::NoteStart(EntryType::Note {
+            tag,
+            title: title,
+            extra: String::new(),
+        });
+    } else {
+        return LineType::NoteLine(line);
     }
 }
 
@@ -147,20 +180,37 @@ fn parse_file<P: AsRef<Path>>(filename: P) -> io::Result<DvlgFile> {
     let mut current_entry: Option<EntryType> = None;
 
     for line in reader.lines() {
-        let line = line?;
-        let line = line.trim();
-        if !line.is_empty() {
-            parse_line(line, &mut current_date, &mut current_entry, &mut dvlg);
+        let tmp_line = line?;
+        match parse_line(&tmp_line) {
+            LineType::Date(date) => current_date = Some(date.to_string()),
+            LineType::NoteStart(new_entry) => {
+                match current_entry {
+                    None => (),
+                    Some(entry) => dvlg.add_entry(&current_date, entry),
+                }
+                current_entry = Some(new_entry);
+            }
+            LineType::NoteLine(note_line) => match current_entry {
+                None => (),
+                Some(EntryType::Todo { ref mut extra, .. })
+                | Some(EntryType::Idea { ref mut extra, .. })
+                | Some(EntryType::Til { ref mut extra, .. })
+                | Some(EntryType::Qts { ref mut extra, .. })
+                | Some(EntryType::QtsAnswer { ref mut extra, .. })
+                | Some(EntryType::Calendar { ref mut extra, .. })
+                | Some(EntryType::Note { ref mut extra, .. }) => {
+                    if !extra.is_empty() {
+                        extra.push('\n');
+                    }
+                    extra.push_str(note_line);
+                }
+            },
         }
     }
 
     // If there's any leftover entry, add it
     if let Some(entry) = current_entry {
-        if let Some(date) = current_date.as_ref() {
-            dvlg.add_entry(date, entry);
-        } else {
-            eprintln!("Warning: Found an entry with no associated date.");
-        }
+        dvlg.add_entry(&current_date, entry);
     }
 
     Ok(dvlg)
@@ -173,7 +223,7 @@ fn print_entry(prefix: &str, extra: &str) {
     }
 }
 
-fn display_entries(dvlg: &DvlgFile, entry_type: &str, tag: Option<&str>) {
+fn display_entries(dvlg: &DvlgFile, entry_type: &str, tags: Option<&str>) {
     for (date, entries) in &dvlg.entries {
         let mut filtered: Vec<_> = entries
             .iter()
@@ -187,8 +237,8 @@ fn display_entries(dvlg: &DvlgFile, entry_type: &str, tag: Option<&str>) {
                 EntryType::Til { .. } if entry_type == "til" => true,
                 EntryType::Qts { .. } if entry_type == "qts" => true,
                 EntryType::Calendar { .. } if entry_type == "cal" => true,
-                EntryType::Note { tags, .. } if entry_type == "note" => {
-                    tag.map_or(true, |t| tags.contains(t))
+                EntryType::Note { tag, .. } if entry_type == "note" => {
+                    tags.map_or(true, |t| tag.contains(t))
                 }
                 _ => false,
             })
@@ -211,6 +261,13 @@ fn display_entries(dvlg: &DvlgFile, entry_type: &str, tag: Option<&str>) {
             });
         }
 
+        let add_slash = |s: &String| {
+            if s.is_empty() {
+                s.to_string()
+            } else {
+                format!("/{}", s)
+            }
+        };
         for entry in filtered {
             match entry {
                 EntryType::Todo {
@@ -220,21 +277,27 @@ fn display_entries(dvlg: &DvlgFile, entry_type: &str, tag: Option<&str>) {
                 } => {
                     print_entry(&format!("- [{}] {}", state, title), extra);
                 }
-                EntryType::Til { title, extra } => {
-                    print_entry(&format!("! {}", title), extra);
+                EntryType::Idea { title, extra, tag } => {
+                    print_entry(&format!("{}$ {}", add_slash(tag), title), extra);
                 }
-                EntryType::Qts { question, extra } => {
-                    print_entry(&format!("? {}", question), extra);
+                EntryType::Til { title, extra, tag } => {
+                    print_entry(&format!("{}! {}", add_slash(tag), title), extra);
+                }
+                EntryType::Qts {
+                    question,
+                    extra,
+                    tag,
+                } => {
+                    print_entry(&format!("{}? {}", add_slash(tag), question), extra);
+                }
+                EntryType::QtsAnswer { answer, extra, tag } => {
+                    print_entry(&format!("{}?! {}", add_slash(tag), answer), extra);
                 }
                 EntryType::Calendar { date, title, extra } => {
                     print_entry(&format!("[{}] {}", date, title), extra);
                 }
-                EntryType::Note { tags, title, extra } => {
-                    if !tags.is_empty() {
-                        print_entry(&format!("/{}/ {}", tags, title), extra);
-                    } else {
-                        print_entry(&format!("/ {}", title), extra);
-                    }
+                EntryType::Note { tag, title, extra } => {
+                    print_entry(&format!("{}/ {}", add_slash(tag), title), extra);
                 }
             }
         }
