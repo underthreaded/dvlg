@@ -7,12 +7,12 @@ use std::path::Path;
 use std::process;
 
 const OPTS: &[&str] = &[
-    "todo", "done", "dropped", "doing", "til", "qts", "cal", "note",
+    "todo", "done", "dropped", "doing", "til", "qts", "cal", "note", "idea", "fmt",
 ];
 const TODO_OPTS: &[&str] = &["todo", "done", "dropped", "doing"];
 
 #[derive(Debug)]
-enum EntryType {
+enum Note {
     Todo {
         state: String,
         title: String,
@@ -43,7 +43,7 @@ enum EntryType {
         title: String,
         extra: String,
     },
-    Note {
+    General {
         tag: String,
         title: String,
         extra: String,
@@ -53,23 +53,23 @@ enum EntryType {
 #[derive(Debug)]
 enum LineType<'a> {
     Date(&'a str),
-    NoteStart(EntryType),
+    NoteStart(Note),
     NoteLine(&'a str),
 }
 
 #[derive(Debug)]
-struct DvlgFile {
-    entries: BTreeMap<String, Vec<EntryType>>,
+struct Dvlg {
+    entries: BTreeMap<String, Vec<Note>>,
 }
 
-impl DvlgFile {
+impl Dvlg {
     fn new() -> Self {
-        DvlgFile {
+        Dvlg {
             entries: BTreeMap::new(),
         }
     }
 
-    fn add_entry(&mut self, date: &Option<String>, entry: EntryType) {
+    fn add_entry(&mut self, date: &Option<String>, entry: Note) {
         let date_str = match date {
             None => "1900-01-01".to_string(),
             Some(date_str) => date_str.to_string(),
@@ -83,7 +83,6 @@ impl DvlgFile {
 
 fn parse_line(line: &str) -> LineType {
     let date_header = line.starts_with('@');
-    let todo = line.starts_with("- [");
 
     let note = line.starts_with('/');
     let parts: Vec<&str> = line.splitn(2, ' ').collect();
@@ -106,11 +105,6 @@ fn parse_line(line: &str) -> LineType {
                 .contains(['!', '?', '$'])
     };
 
-    let til = is_construct("/", "!");
-    let qts = is_construct("/", "?");
-    let qtsa = is_construct("/", "?!");
-    let idea = is_construct("/", "$");
-
     let title = if parts.len() == 2 {
         parts[1].trim().to_string()
     } else {
@@ -119,49 +113,50 @@ fn parse_line(line: &str) -> LineType {
 
     if date_header {
         return LineType::Date(line[1..].trim());
-    } else if todo {
-        let state = &line[3..4];
-        let title = line[5..].trim().to_string();
-        return LineType::NoteStart(EntryType::Todo {
+    } else if line.starts_with("- [") {
+        let end = line.find(']').unwrap();
+        let state = &line[3..end];
+        let entry = line[end + 1..].trim().to_string();
+        return LineType::NoteStart(Note::Todo {
             state: state.to_string(),
-            title,
+            title: entry,
             extra: String::new(),
         });
     } else if line.starts_with('[') && line.contains(']') {
         let end = line.find(']').unwrap();
         let date = &line[1..end];
-        let title = line[end + 1..].trim().to_string();
-        return LineType::NoteStart(EntryType::Calendar {
+        let event = line[end + 1..].trim().to_string();
+        return LineType::NoteStart(Note::Calendar {
             date: date.to_string(),
-            title,
+            title: event,
             extra: String::new(),
         });
-    } else if til {
-        return LineType::NoteStart(EntryType::Til {
+    } else if is_construct("/", "!") {
+        return LineType::NoteStart(Note::Til {
             tag,
             title,
             extra: String::new(),
         });
-    } else if idea {
-        return LineType::NoteStart(EntryType::Idea {
+    } else if is_construct("/", "$") {
+        return LineType::NoteStart(Note::Idea {
             tag,
             title,
             extra: String::new(),
         });
-    } else if qts {
-        return LineType::NoteStart(EntryType::Qts {
+    } else if is_construct("/", "?") {
+        return LineType::NoteStart(Note::Qts {
             tag,
             question: title,
             extra: String::new(),
         });
-    } else if qtsa {
-        return LineType::NoteStart(EntryType::QtsAnswer {
+    } else if is_construct("/", "?!") {
+        return LineType::NoteStart(Note::QtsAnswer {
             tag,
             answer: title,
             extra: String::new(),
         });
     } else if note {
-        return LineType::NoteStart(EntryType::Note {
+        return LineType::NoteStart(Note::General {
             tag,
             title: title,
             extra: String::new(),
@@ -171,38 +166,47 @@ fn parse_line(line: &str) -> LineType {
     }
 }
 
-fn parse_file<P: AsRef<Path>>(filename: P) -> io::Result<DvlgFile> {
+fn parse_file<P: AsRef<Path>>(filename: P) -> io::Result<Dvlg> {
     let file = File::open(filename)?;
     let reader = io::BufReader::new(file);
 
-    let mut dvlg = DvlgFile::new();
+    let mut dvlg = Dvlg::new();
     let mut current_date: Option<String> = None;
-    let mut current_entry: Option<EntryType> = None;
+    let mut current_entry: Option<Note> = None;
 
     for line in reader.lines() {
         let tmp_line = line?;
         match parse_line(&tmp_line) {
-            LineType::Date(date) => current_date = Some(date.to_string()),
+            LineType::Date(date) => {
+                match current_entry {
+                    None => (),
+                    Some(entry) => {
+                        dvlg.add_entry(&current_date, entry);
+                    }
+                }
+                current_entry = None;
+                current_date = Some(date.to_string());
+            }
             LineType::NoteStart(new_entry) => {
                 match current_entry {
                     None => (),
-                    Some(entry) => dvlg.add_entry(&current_date, entry),
+                    Some(entry) => {
+                        dvlg.add_entry(&current_date, entry);
+                    }
                 }
                 current_entry = Some(new_entry);
             }
             LineType::NoteLine(note_line) => match current_entry {
                 None => (),
-                Some(EntryType::Todo { ref mut extra, .. })
-                | Some(EntryType::Idea { ref mut extra, .. })
-                | Some(EntryType::Til { ref mut extra, .. })
-                | Some(EntryType::Qts { ref mut extra, .. })
-                | Some(EntryType::QtsAnswer { ref mut extra, .. })
-                | Some(EntryType::Calendar { ref mut extra, .. })
-                | Some(EntryType::Note { ref mut extra, .. }) => {
-                    if !extra.is_empty() {
-                        extra.push('\n');
-                    }
+                Some(Note::Todo { ref mut extra, .. })
+                | Some(Note::Idea { ref mut extra, .. })
+                | Some(Note::Til { ref mut extra, .. })
+                | Some(Note::Qts { ref mut extra, .. })
+                | Some(Note::QtsAnswer { ref mut extra, .. })
+                | Some(Note::Calendar { ref mut extra, .. })
+                | Some(Note::General { ref mut extra, .. }) => {
                     extra.push_str(note_line);
+                    extra.push('\n');
                 }
             },
         }
@@ -219,28 +223,35 @@ fn parse_file<P: AsRef<Path>>(filename: P) -> io::Result<DvlgFile> {
 fn print_entry(prefix: &str, extra: &str) {
     println!("{}", prefix);
     if !extra.is_empty() {
-        println!("{}\n", extra);
+        print!("{}", extra);
     }
 }
 
-fn display_entries(dvlg: &DvlgFile, entry_type: &str, tags: Option<&str>) {
+fn display_entries(dvlg: &Dvlg, entry_type: &str, tags: Option<&str>) {
     for (date, entries) in &dvlg.entries {
         let mut filtered: Vec<_> = entries
             .iter()
-            .filter(|entry| match entry {
-                EntryType::Todo { state, .. } if TODO_OPTS.contains(&entry_type) => {
-                    match (entry_type, state.as_str()) {
-                        ("todo", " ") | ("done", "x") | ("doing", "/") | ("dropped", "-") => true,
-                        _ => false,
+            .filter(|entry| {
+                if entry_type == "fmt" {
+                    return true;
+                }
+                match entry {
+                    Note::Todo { state, .. } if TODO_OPTS.contains(&entry_type) => {
+                        match (entry_type, state.as_str()) {
+                            ("todo", " ") | ("done", "x") | ("doing", "/") | ("dropped", "-") => {
+                                true
+                            }
+                            _ => false,
+                        }
                     }
+                    Note::Til { .. } if entry_type == "til" => true,
+                    Note::Qts { .. } if entry_type == "qts" => true,
+                    Note::Calendar { .. } if entry_type == "cal" => true,
+                    Note::General { tag, .. } if entry_type == "note" => {
+                        tags.map_or(true, |t| tag.contains(t))
+                    }
+                    _ => false,
                 }
-                EntryType::Til { .. } if entry_type == "til" => true,
-                EntryType::Qts { .. } if entry_type == "qts" => true,
-                EntryType::Calendar { .. } if entry_type == "cal" => true,
-                EntryType::Note { tag, .. } if entry_type == "note" => {
-                    tags.map_or(true, |t| tag.contains(t))
-                }
-                _ => false,
             })
             .collect();
 
@@ -252,8 +263,8 @@ fn display_entries(dvlg: &DvlgFile, entry_type: &str, tags: Option<&str>) {
             println!("@{}", date);
         } else {
             filtered.sort_by(|a, b| {
-                if let EntryType::Calendar { date: date_a, .. } = a {
-                    if let EntryType::Calendar { date: date_b, .. } = b {
+                if let Note::Calendar { date: date_a, .. } = a {
+                    if let Note::Calendar { date: date_b, .. } = b {
                         return date_a.cmp(date_b);
                     }
                 }
@@ -270,33 +281,33 @@ fn display_entries(dvlg: &DvlgFile, entry_type: &str, tags: Option<&str>) {
         };
         for entry in filtered {
             match entry {
-                EntryType::Todo {
+                Note::Todo {
                     state,
                     title,
                     extra,
                 } => {
                     print_entry(&format!("- [{}] {}", state, title), extra);
                 }
-                EntryType::Idea { title, extra, tag } => {
+                Note::Idea { title, extra, tag } => {
                     print_entry(&format!("{}$ {}", add_slash(tag), title), extra);
                 }
-                EntryType::Til { title, extra, tag } => {
+                Note::Til { title, extra, tag } => {
                     print_entry(&format!("{}! {}", add_slash(tag), title), extra);
                 }
-                EntryType::Qts {
+                Note::Qts {
                     question,
                     extra,
                     tag,
                 } => {
                     print_entry(&format!("{}? {}", add_slash(tag), question), extra);
                 }
-                EntryType::QtsAnswer { answer, extra, tag } => {
+                Note::QtsAnswer { answer, extra, tag } => {
                     print_entry(&format!("{}?! {}", add_slash(tag), answer), extra);
                 }
-                EntryType::Calendar { date, title, extra } => {
+                Note::Calendar { date, title, extra } => {
                     print_entry(&format!("[{}] {}", date, title), extra);
                 }
-                EntryType::Note { tag, title, extra } => {
+                Note::General { tag, title, extra } => {
                     print_entry(&format!("{}/ {}", add_slash(tag), title), extra);
                 }
             }
