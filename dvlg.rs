@@ -1,4 +1,3 @@
-use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use std::env;
 use std::fs::File;
@@ -220,10 +219,15 @@ fn parse_file<P: AsRef<Path>>(filename: P) -> io::Result<Dvlg> {
     Ok(dvlg)
 }
 
-fn print_entry(prefix: &str, extra: &str) {
-    println!("{}", prefix);
-    if !extra.is_empty() {
-        print!("{}", extra);
+fn note_sorter(entry: &Note) -> (i32, &str) {
+    match entry {
+        Note::Todo { .. } => (1, "0"),
+        Note::Idea { .. } => (1, "1"),
+        Note::Til { .. } => (1, "2"),
+        Note::Qts { .. } => (1, "3"),
+        Note::QtsAnswer { .. } => (1, "3"),
+        Note::Calendar { date: date_a, .. } => (2, date_a.as_str()),
+        Note::General { tag, .. } => (3, tag.as_str()),
     }
 }
 
@@ -255,21 +259,19 @@ fn display_entries(dvlg: &Dvlg, entry_type: &str, tags: Option<&str>) {
             })
             .collect();
 
+        filtered.sort_by_key(|event| {
+            if !["fmt", "cal"].contains(&entry_type) {
+                return (1, "");
+            }
+            note_sorter(event)
+        });
+
         if filtered.is_empty() {
             continue;
         }
 
         if entry_type != "cal" {
             println!("@{}", date);
-        } else {
-            filtered.sort_by(|a, b| {
-                if let Note::Calendar { date: date_a, .. } = a {
-                    if let Note::Calendar { date: date_b, .. } = b {
-                        return date_a.cmp(date_b);
-                    }
-                }
-                Ordering::Equal
-            });
         }
 
         let add_slash = |s: &String| {
@@ -279,39 +281,61 @@ fn display_entries(dvlg: &Dvlg, entry_type: &str, tags: Option<&str>) {
                 format!("/{}", s)
             }
         };
+
+        let print_entry = |prefix: String, extra: &String| {
+            println!("{}", prefix);
+            if !extra.is_empty() {
+                if entry_type == "fmt" {
+                    println!("{}", extra.trim());
+                } else {
+                    print!("{}", extra);
+                }
+            }
+        };
+
+        let mut prev_type: Option<_> = None;
+
         for entry in filtered {
+            let current_type = note_sorter(entry);
+            match (current_type, prev_type) {
+                ((2, _), Some((2, _))) | ((3, _), Some((3, _))) => (),
+                (a, Some(b)) if a != b => println!(),
+                ((1, _), Some((1, _))) | (_, _) => (),
+            }
             match entry {
                 Note::Todo {
                     state,
                     title,
                     extra,
                 } => {
-                    print_entry(&format!("- [{}] {}", state, title), extra);
+                    print_entry(format!("- [{}] {}", state, title), extra);
                 }
                 Note::Idea { title, extra, tag } => {
-                    print_entry(&format!("{}$ {}", add_slash(tag), title), extra);
+                    print_entry(format!("{}$ {}", add_slash(tag), title), extra);
                 }
                 Note::Til { title, extra, tag } => {
-                    print_entry(&format!("{}! {}", add_slash(tag), title), extra);
+                    print_entry(format!("{}! {}", add_slash(tag), title), extra);
                 }
                 Note::Qts {
                     question,
                     extra,
                     tag,
                 } => {
-                    print_entry(&format!("{}? {}", add_slash(tag), question), extra);
+                    print_entry(format!("{}? {}", add_slash(tag), question), extra);
                 }
                 Note::QtsAnswer { answer, extra, tag } => {
-                    print_entry(&format!("{}?! {}", add_slash(tag), answer), extra);
+                    print_entry(format!("{}?! {}", add_slash(tag), answer), extra);
                 }
                 Note::Calendar { date, title, extra } => {
-                    print_entry(&format!("[{}] {}", date, title), extra);
+                    print_entry(format!("[{}] {}", date, title), extra);
                 }
                 Note::General { tag, title, extra } => {
-                    print_entry(&format!("{}/ {}", add_slash(tag), title), extra);
+                    print_entry(format!("{}/ {}", add_slash(tag), title), extra);
                 }
             }
+            prev_type = Some(current_type);
         }
+        println!()
     }
 }
 
