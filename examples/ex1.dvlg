@@ -10,6 +10,7 @@ We can do this by writing a nice readme to explain the idea for now
 - [x] learn how to make a syntax highlighting vscode package
 - [/] learn how to make a simple devlog LSP with snippet suggestions and suchlike
 [2024-09-10] Remind me to do something
+[2024-09-10 08:00] Remind me to do something at this time
 
 / It's nice when you can watch an expert doing what you're trying to do
 
@@ -20,4 +21,23 @@ We can do this by writing a nice readme to explain the idea for now
 
 [2024-09-03] Super important meeting
 
+@2024-10-09
+
 ? are QTS's useful?
+?! Maybe so...
+
+- [6] So how about that?
+- [3] So how about this?
+- [1y] And what about this?
+- [1q] And what about this?
+
+$ OOOH nice idea
+
+/a/tagged/idea$ A fancy tagged idea
+/a/tagged/til! A fancy tagged til
+
+
+/a/tagged/qts? A fancy tagged til
+/a/tagged/qts?! A fancy tagged til
+
+/something-something/

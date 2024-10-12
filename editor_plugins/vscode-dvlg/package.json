@@ -1,5 +1,6 @@
 {
   "name": "dvlg",
+  "version": "0.0.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/underthreaded/dvlg.git"
@@ -13,7 +14,6 @@
     "color": "#0B1F39",
     "theme": "dark"
   },
-  "version": "0.0.5",
   "engines": {
     "vscode": "^1.92.0"
   },
