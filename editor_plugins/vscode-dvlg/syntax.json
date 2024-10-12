@@ -67,7 +67,7 @@
     },
     {
       "name": "keyword.control.idea",
-      "match": "^(/[a-z_/]+[a-z_^/])*\\$ (.*)$",
+      "match": "^(/[\\w\\-_/]+[\\w\\-_^/])*\\$ (.*)$",
       "captures": {
         "2": {
           "name": "markup.italic"
@@ -76,7 +76,7 @@
     },
     {
       "name": "keyword.control.til",
-      "match": "^(/[a-z_/]+[a-z_^/])*! (.*)$",
+      "match": "^(/[\\w\\-_/]+[\\w\\-_^/])*! (.*)$",
       "captures": {
         "2": {
           "name": "string"
@@ -85,7 +85,7 @@
     },
     {
       "name": "keyword.control.qts.answer",
-      "match": "^(/[a-z_/]+[a-z_^/])*\\?! (.*)$",
+      "match": "^(/[\\w\\-_/]+[\\w\\-_^/])*\\?! (.*)$",
       "captures": {
         "2": {
           "name": "storage.type"
@@ -94,7 +94,7 @@
     },
     {
       "name": "keyword.control.qts",
-      "match": "^(/[a-z_/]+[a-z_^/])*\\? (.*)$",
+      "match": "^(/[\\w\\-_/]+[\\w\\-_^/])*\\? (.*)$",
       "captures": {
         "2": {
           "name": "storage.type"
@@ -121,7 +121,7 @@
     },
     {
       "name": "entity.name.tag.note",
-      "match": "^(/)([a-z_/]+/)*($| .*$)",
+      "match": "^(/)([\\w\\-_/]+/)*($| .*$)",
       "captures": {
         "1": {
           "name": "entity.name.tag"
