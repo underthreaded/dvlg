@@ -1,6 +1,6 @@
 {
   "name": "dvlg",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "repository": {
     "type": "git",
     "url": "https://github.com/underthreaded/dvlg.git"
@@ -53,6 +53,28 @@
         "language": "dvlg",
         "path": "./snippets.json"
       }
-    ]
+    ],
+    "configurationDefaults": {
+      "[dvlg]": {
+        "editor.quickSuggestions": {
+          "other": false,
+          "comments": false,
+          "strings": false
+        },
+        "editor.suggest.showWords": false,
+        "editor.suggest.showFiles": false,
+        "editor.suggest.showKeywords": false,
+        "editor.suggest.showFunctions": false,
+        "editor.suggest.showVariables": false,
+        "editor.suggest.showClasses": false,
+        "editor.suggest.showModules": false,
+        "editor.suggest.showInterfaces": false,
+        "editor.suggest.showUnits": false,
+        "editor.suggest.showColors": false,
+        "editor.suggest.showValues": false,
+        "editor.suggest.showSnippets": true,
+        "editor.wordBasedSuggestions": "off"
+      }
+    }
   }
 }
